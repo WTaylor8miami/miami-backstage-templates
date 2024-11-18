@@ -1,0 +1,39 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-cluster-template
+  title: Create Kubernetes Cluster
+  description: A template for creating a Kubernetes cluster using Terraform and Rancher.
+  owner: taylorw8@miamioh.edu
+  annotations:
+    backstage.io/public-access: 'true'
+spec:
+  type: service
+  parameters:
+    - title: Cluster Name
+      type: string
+      required: true
+      name: clusterName
+    - title: Node Count
+      type: number
+      required: true
+      name: nodeCount
+  steps:
+    - id: initialize-terraform
+      name: Initialize Terraform
+      action: terraform:init
+      input: {}
+    - id: apply-terraform
+      name: Apply Terraform Configuration
+      action: terraform:apply
+      input:
+        clusterName: ${{ parameters.clusterName }}
+        nodeCount: ${{ parameters.nodeCount }}
+    - id: verify-cluster
+      name: Verify Cluster Creation
+      action: shell:execute
+      input:
+        command: "kubectl get nodes"
+
+  output:
+    clusterUrl: "https://10.48.10.140"
